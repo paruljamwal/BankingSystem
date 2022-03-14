@@ -1,7 +1,7 @@
 const express=require("express");
 const mongoose=require("mongoose")
 const app=express();
-app.use(express())
+app.use(express.json())
 const connect=()=>{
   return mongoose.connect("mongodb+srv://paru:paru@cluster0.dai2j.mongodb.net/bank?retryWrites=true&w=majority")
 }
@@ -134,9 +134,9 @@ const FixedAccount=mongoose.Schema({
        }
    });
 
-   app.patch("/master",async(req,res)=>{
+   app.patch("/master/:id",async(req,res)=>{
     try{
-     const masters= await mastermodel.findByIdAndUpdate(req.body).populate({balance:1});
+     const masters= await mastermodel.findByIdAndUpdate(req.params.id,req.body).populate({balance:1});
      return req.statusCode(200).send(masters)
     }
     catch(err){
@@ -189,8 +189,8 @@ app.post("/fixed/:id",async(req,res)=>{
 app.delete("/fixed/:id",async(req,res)=>{
     try{
 
-        
-        const users= await Usermodel.findByIdAndDelete(req.params.id);
+
+        const users= await Fixedmodel.findByIdAndDelete(req.params.id);
         return req.statusCode(200).send(users)
      }
      catch(err){
@@ -198,6 +198,17 @@ app.delete("/fixed/:id",async(req,res)=>{
      }
 })
 
+app.patch("/fixed/:id",async(req,res)=>{
+    try{
+
+        
+        const users= await Fixedmodel.findByIdAndDelete(req.params.id,req.body);
+        return req.statusCode(200).send(users)
+     }
+     catch(err){
+        req.statusCode(404).send("Somthing went wrong ") 
+     }
+})
 
 app.listen(5555,async (req,res)=>{
     try{
